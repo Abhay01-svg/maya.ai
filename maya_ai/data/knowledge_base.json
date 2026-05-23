@@ -1,0 +1,39 @@
+{
+  "general_info": {
+    "maya_ai": "Maya AI is a professional AI assistant created for intelligent task automation and natural conversation.",
+    "capabilities": "I can help with general questions, calculations, time/date queries, coding assistance, and basic problem-solving without requiring internet connectivity.",
+    "offline_mode": "I work completely offline using my local knowledge base and reasoning capabilities."
+  },
+  "math_facts": {
+    "pi": "3.14159265359",
+    "e": "2.71828182846",
+    "golden_ratio": "1.61803398875",
+    "sqrt_2": "1.41421356237",
+    "sqrt_3": "1.73205080757"
+  },
+  "time_facts": {
+    "time_zones": {
+      "utc": "Coordinated Universal Time",
+      "est": "Eastern Standard Time (UTC-5)",
+      "pst": "Pacific Standard Time (UTC-8)",
+      "ist": "India Standard Time (UTC+5:30)",
+      "gmt": "Greenwich Mean Time"
+    },
+    "formats": {
+      "12h": "12-hour format (HH:MM AM/PM)",
+      "24h": "24-hour format (HH:MM)",
+      "iso": "ISO 8601 format (YYYY-MM-DDTHH:MM:SS)"
+    }
+  },
+  "coding_help": {
+    "python": "Python is a high-level programming language known for its simplicity and readability.",
+    "javascript": "JavaScript is essential for web development and interactive applications.",
+    "html_css": "HTML and CSS are fundamental for web page structure and styling.",
+    "best_practices": "Always write clean, commented code with proper error handling and documentation."
+  },
+  "problem_solving": {
+    "approach": "Break down complex problems into smaller, manageable steps.",
+    "verification": "Always verify solutions and provide clear explanations.",
+    "alternatives": "Consider multiple approaches when solving problems."
+  }
+}

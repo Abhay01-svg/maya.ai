@@ -1,0 +1,72 @@
+name: VUI Integration Tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Polyglot_VUI/**'
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps (requests)
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Install Node deps (node_vui)
+        working-directory: Polyglot_VUI/node_vui
+        run: npm ci
+
+      - name: Start Python brain
+        run: |
+          nohup python Polyglot_VUI/python_brain/app.py > polyglot_brain.log 2>&1 &
+          # wait for health
+          for i in {1..20}; do
+            if curl -sSf http://127.0.0.1:5001/health >/dev/null; then
+              echo "python brain up"; break
+            fi
+            sleep 1
+          done
+
+      - name: Start Node VUI
+        working-directory: Polyglot_VUI/node_vui
+        run: |
+          nohup npm start > node_vui.log 2>&1 &
+          for i in {1..10}; do
+            if curl -sSf http://127.0.0.1:3000 >/dev/null; then
+              echo "node vui up"; break
+            fi
+            sleep 1
+          done
+
+      - name: Run Python VUI tests
+        run: python Polyglot_VUI/tests/test_vui_api.py
+
+      - name: Run Node socket test
+        working-directory: Polyglot_VUI/node_vui
+        run: npm run test:socket
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: vui-logs
+          path: |
+            polyglot_brain.log
+            Polyglot_VUI/node_vui/node_vui.log
+            Polyglot_VUI/logs/**

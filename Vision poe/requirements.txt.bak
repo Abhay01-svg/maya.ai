@@ -1,0 +1,13 @@
+"""
+Backup of Vision poe requirements.txt
+"""
+PyQt5>=5.15
+speechrecognition>=3.8.1
+pyttsx3>=2.90
+edge-tts>=0.2.0
+pyautogui>=0.9.53
+psutil>=5.9.0
+pywin32>=304
+openai>=0.27.0
+requests>=2.28
+opencv-python>=4.7.0

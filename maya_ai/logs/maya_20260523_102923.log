@@ -1,0 +1,20 @@
+2026-05-23 10:29:23,251 - modules.decision_making - INFO - 🌐 Offline mode disabled; cloud fallbacks may be enabled via environment variables
+2026-05-23 10:29:27,588 - modules.elite_nlp_engine - WARNING - ⚠️ scikit-learn not available, using rule-based classification
+2026-05-23 10:29:27,588 - modules.elite_nlp_engine - INFO - 🧠 Elite NLP Engine initialized
+2026-05-23 10:29:27,590 - modules.elite_nlp_engine - WARNING - ⚠️ scikit-learn not available, using rule-based classification
+2026-05-23 10:29:27,590 - modules.elite_nlp_engine - INFO - 🧠 Elite NLP Engine initialized
+2026-05-23 10:29:27,597 - modules.decision_making - INFO - 🧠 Elite NLP Engine loaded
+2026-05-23 10:29:27,992 - modules.decision_making - INFO - 🧠 spaCy NLP model loaded for enhanced decision making
+2026-05-23 10:29:28,617 - modules.duckduckgo_search - INFO - 🦆 DuckDuckGo search initialized (no API key required)
+2026-05-23 10:29:28,617 - modules.duckduckgo_search - INFO - 🦆 DuckDuckGo search initialized (no API key required)
+2026-05-23 10:29:28,703 - modules.memory - INFO - ✅ Maya identity initialized
+2026-05-23 10:29:28,705 - modules.memory - INFO - ✅ Memory databases initialized
+2026-05-23 10:29:28,708 - modules.rag_search - INFO - 🔍 RAG + Web Search Engine initialized
+2026-05-23 10:29:28,716 - modules.xai - INFO - 🧠 XAI Engine initialized
+2026-05-23 10:29:28,717 - modules.smart_agent_response - INFO - 🤖 Smart Agent Response Module initialized
+2026-05-23 10:29:28,718 - modules.decision_making - INFO - ✅ Groq API available as cloud fallback
+2026-05-23 10:29:28,718 - modules.decision_making - INFO - 🧠 Smart Decision Maker initialized
+2026-05-23 10:29:28,718 - modules.rag_search - INFO - 🔍 RAG + Web Search Engine initialized
+2026-05-23 10:29:29,143 - modules.groq_api - INFO - ✅ Groq API client initialized and ready as fallback
+2026-05-23 10:29:29,143 - modules.brain - INFO - 🧠 Maya Brain initialized
+2026-05-23 10:29:29,143 - modules.brain - INFO - 🗣️ Hinglish converter ready

@@ -1,0 +1,49 @@
+# Backup of original requirements_optimized.txt
+"""
+# Maya AI Optimized Requirements
+# Core dependencies only for size and RAM optimization
+
+# Core Flask and web framework
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Essential ML/AI libraries
+requests==2.31.0
+numpy==1.24.3
+
+# Text processing
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# System monitoring
+psutil==5.9.5
+
+# Optional libraries (install as needed)
+# Uncomment lines below for full functionality
+
+# Image processing (for image generation)
+# Pillow==10.0.1
+# pytesseract==0.3.10
+
+# PDF processing (for document analysis)
+# PyPDF2==3.0.1
+# pdfplumber==0.9.0
+
+# Document processing
+# python-docx==0.8.11
+
+# OCR capabilities
+# pytesseract==0.3.10
+
+# Voice/speech (optional)
+# SpeechRecognition==3.10.0
+# pyttsx3==2.90
+
+# Advanced ML (optional)
+# scikit-learn==1.3.0
+# xgboost==1.7.6
+
+# Scheduling (optional)
+# APScheduler==3.10.4
+
+"""

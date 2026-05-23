@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maya AI - Sweet Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #fad0c4 75%, #ff9a9e 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .sweet-gradient {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 25%, #48dbfb 50%, #ff9ff3 75%, #54a0ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .sweet-input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .sweet-input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .sweet-button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .sweet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .sweet-button:active {
+            transform: translateY(0);
+        }
+        
+        .output-container {
+            max-height: 400px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        .output-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .output-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .output-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            border-radius: 10px;
+        }
+        
+        .output-message {
+            animation: slideIn 0.5s ease, fadeIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+        
+        .maya-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+            }
+            70% {
+                transform: scroll(1.05);
+                box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+            }
+        }
+        
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            color: rgba(255, 107, 107, 0.6);
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <!-- Floating Hearts Background -->
+    <div class="floating-hearts" id="hearts"></div>
+    
+    <!-- Main Container -->
+    <div class="w-full max-w-2xl z-10">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="maya-avatar mx-auto mb-4">
+                <i data-lucide="heart" class="w-8 h-8 text-white"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-2">Maya AI</h1>
+            <p class="text-white text-opacity-90">Aapki Sweet Assistant Dost 🌸</p>
+        </div>
+        
+        <!-- Main Card -->
+        <div class="glass-morphism rounded-3xl p-8">
+            <!-- Search Bar with Voice and Upload -->
+            <div class="mb-6">
+                <!-- Voice and Upload Controls -->
+                <div class="flex justify-center space-x-4 mb-4">
+                    <button 
+                        onclick="startVoiceInput()"
+                        class="bg-pink-400 bg-opacity-20 backdrop-blur-sm border-2 border-pink-300 px-6 py-3 rounded-full text-white hover:bg-opacity-30 transition-all flex items-center space-x-2"
+                    >
+                        <i data-lucide="mic" class="w-5 h-5"></i>
+                        <span>Voice</span>
+                    </button>
+                    
+                    <label class="bg-purple-400 bg-opacity-20 backdrop-blur-sm border-2 border-purple-300 px-6 py-3 rounded-full text-white hover:bg-opacity-30 transition-all flex items-center space-x-2 cursor-pointer">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                        <span>Upload</span>
+                        <input type="file" id="file-input" class="hidden" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.bmp,.tiff" onchange="uploadFile()">
+                    </label>
+                    
+                    <button 
+                        onclick="toggleVoiceOutput()"
+                        id="voice-toggle"
+                        class="bg-blue-400 bg-opacity-20 backdrop-blur-sm border-2 border-blue-300 px-6 py-3 rounded-full text-white hover:bg-opacity-30 transition-all flex items-center space-x-2"
+                    >
+                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+                        <span>Speak</span>
+                    </button>
+                </div>
+                
+                <!-- Main Search Bar -->
+                <div class="flex space-x-4">
+                    <input 
+                        type="text" 
+                        id="search-input"
+                        placeholder="Maya se kuch bhi poocho... ya file upload karo! 💕" 
+                        class="flex-1 sweet-input px-6 py-4 rounded-full text-white placeholder-white placeholder-opacity-70 focus:outline-none text-lg"
+                        onkeypress="if(event.key === 'Enter') sendMessage()"
+                    >
+                    <button 
+                        onclick="sendMessage()"
+                        class="sweet-button px-8 py-4 rounded-full text-white font-semibold flex items-center space-x-2 hover:scale-105 transition-transform"
+                    >
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        <span>Bolo Maya</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Output Container -->
+            <div class="output-container bg-white bg-opacity-10 rounded-2xl p-6" id="output">
+                <div class="text-center text-white text-opacity-80 py-8">
+                    <i data-lucide="heart" class="w-12 h-12 mx-auto mb-4 text-white text-opacity-60"></i>
+                    <p class="text-lg">Maya se baat karna chahogi? 🌸</p>
+                    <p class="text-sm mt-2">Search, calculate, weather, news - sab kuch! 💕</p>
+                </div>
+            </div>
+            
+            <!-- Status Bar -->
+            <div class="mt-4 flex justify-between items-center text-white text-opacity-70 text-sm">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full pulse-animation"></div>
+                    <span>Maya Ready! 💕</span>
+                </div>
+                <div id="status-text">
+                    Aapki wait kar rahi hun...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Create floating hearts
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartSymbols = ['❤️', '💕', '💖', '💗', '💝', '💓'];
+            
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                
+                heartsContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 5000);
+            }, 2000);
+        }
+        
+        createHearts();
+        
+        // Message handling
+        let isProcessing = false;
+        let voiceOutputEnabled = false;
+        
+        async function sendMessage() {
+            const input = document.getElementById('search-input');
+            const output = document.getElementById('output');
+            const statusText = document.getElementById('status-text');
+            const message = input.value.trim();
+            
+            if (!message || isProcessing) return;
+            
+            isProcessing = true;
+            input.value = '';
+            statusText.textContent = 'Maya soch rahi hai... 🤔';
+            
+            // Add user message
+            addMessage(message, 'user');
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+                
+                const result = await response.json();
+                hideTypingIndicator();
+                
+                if (result.success) {
+                    addMessage(result.data.response, 'maya');
+                    statusText.textContent = 'Maya khush hai! 😊';
+                    
+                    // Auto-scroll to bottom
+                    output.scrollTop = output.scrollHeight;
+                    
+                    // Add heart animation
+                    addHeartBurst();
+                    
+                    // Speak response if voice output is enabled
+                    if (voiceOutputEnabled) {
+                        speakResponse(result.data.response);
+                    }
+                } else {
+                    addMessage('Arre Maya ko thodi dikkat ho gayi! Phir se try karo na? 💕', 'maya');
+                    statusText.textContent = 'Maya sorry hai! 😅';
+                }
+                
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Network mein problem hai! Connection check karo na? 🌐', 'maya');
+                statusText.textContent = 'Connection issue! 😅';
+            }
+            
+            isProcessing = false;
+        }
+        
+        function addMessage(text, sender) {
+            const output = document.getElementById('output');
+            
+            // Clear initial message if present
+            if (output.querySelector('.text-center')) {
+                output.innerHTML = '';
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'output-message mb-4';
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-end">
+                        <div class="bg-white bg-opacity-20 rounded-2xl rounded-br-none px-4 py-3 max-w-xs lg:max-w-md">
+                            <p class="text-white text-sm">${text}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex justify-start">
+                        <div class="bg-gradient-to-r from-pink-400 to-yellow-400 rounded-2xl rounded-bl-none px-4 py-3 max-w-xs lg:max-w-md">
+                            <p class="text-white text-sm">${text}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            output.appendChild(messageDiv);
+            
+            // Auto-scroll to bottom
+            setTimeout(() => {
+                output.scrollTop = output.scrollHeight;
+            }, 100);
+        }
+        
+        function showTypingIndicator() {
+            const output = document.getElementById('output');
+            
+            // Clear initial message if present
+            if (output.querySelector('.text-center')) {
+                output.innerHTML = '';
+            }
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'output-message mb-4';
+            typingDiv.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="bg-gradient-to-r from-pink-400 to-yellow-400 rounded-2xl rounded-bl-none px-4 py-3">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            output.appendChild(typingDiv);
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+        
+        function addHeartBurst() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartSymbols = ['💕', '💖', '💗', '💝'];
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                    heart.style.left = (45 + Math.random() * 10) + '%';
+                    heart.style.animationDuration = '2s';
+                    heart.style.fontSize = (20 + Math.random() * 10) + 'px';
+                    
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 2000);
+                }, i * 100);
+            }
+        }
+        
+        // Voice and Upload Functions
+        async function startVoiceInput() {
+            try {
+                const response = await fetch('/voice_input', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addMessage('🎤 ' + result.message, 'maya');
+                    // In production, this would activate actual microphone
+                    addMessage('Mic activate karne ke liye browser permission dena padega! 🎤', 'maya');
+                } else {
+                    addMessage('Voice mein problem hai! 😅', 'maya');
+                }
+            } catch (error) {
+                addMessage('Voice input error! Try karo na! 🎤', 'maya');
+            }
+        }
+        
+        async function uploadFile() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                addMessage('Koi file select nahi ki! 📁', 'maya');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                addMessage(`File upload kar rahi hun: ${file.name} 📄`, 'maya');
+                showTypingIndicator();
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                hideTypingIndicator();
+                
+                if (result.success) {
+                    addMessage(result.response, 'maya');
+                    addHeartBurst();
+                } else {
+                    addMessage('File upload mein problem hai! ' + result.error + ' 😅', 'maya');
+                }
+                
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Upload error! Try karo na! 📁', 'maya');
+            }
+            
+            // Clear file input
+            fileInput.value = '';
+        }
+        
+        function toggleVoiceOutput() {
+            voiceOutputEnabled = !voiceOutputEnabled;
+            const button = document.getElementById('voice-toggle');
+            
+            if (voiceOutputEnabled) {
+                button.classList.add('bg-green-400');
+                button.classList.remove('bg-blue-400');
+                button.querySelector('span').textContent = 'Mute';
+                addMessage('Maya ab bol sakti hai! 🔊', 'maya');
+            } else {
+                button.classList.remove('bg-green-400');
+                button.classList.add('bg-blue-400');
+                button.querySelector('span').textContent = 'Speak';
+                addMessage('Maya ab chup hai! 🤫', 'maya');
+            }
+        }
+        
+        async function speakResponse(text) {
+            try {
+                const response = await fetch('/speak', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('TTS result:', result);
+                
+            } catch (error) {
+                console.log('TTS error:', error);
+            }
+        }
+        
+        // Initial status update
+        fetch('/status').then(response => response.json()).then(data => {
+            if (data.success) {
+                document.getElementById('status-text').textContent = data.message;
+                
+                // Update status based on voice availability
+                if (data.voice_available) {
+                    console.log('Voice recognition available');
+                }
+                if (data.tts_available) {
+                    console.log('Text-to-speech available');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

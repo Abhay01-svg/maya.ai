@@ -1,0 +1,55 @@
+# Maya AI Requirements
+# Python 3.8+
+
+# Core
+python-dotenv==1.2.2
+requests==2.33.1
+
+# Mathematics & Science
+sympy==1.14.0
+numpy==2.4.4
+scipy==1.17.1
+
+# Machine Learning
+xgboost==3.2.0
+scikit-learn==1.8.0
+
+# Elite NLP Engine
+spacy==3.8.14
+langdetect>=1.0.9  # MISSING in venv
+textblob>=0.17.1  # MISSING in venv
+rapidfuzz>=2.13.0  # MISSING in venv
+sentence-transformers==5.3.0
+transformers==5.4.0
+torch==2.11.0
+faiss-cpu>=1.7.4  # MISSING in venv
+chromadb>=0.4.0  # MISSING in venv
+
+# PC Control
+pyautogui==0.9.54
+psutil==7.2.2
+keyboard==0.13.5
+mouse==0.7.1
+
+# Database
+# sqlite3 is included in the Python standard library; no external package required
+
+# Voice (optional)
+SpeechRecognition==3.15.2
+pyttsx3==2.99
+
+# Local Model Support
+ollama==0.6.1
+
+# Scheduling
+APScheduler==3.11.2
+
+# Optional: For advanced features
+pandas==3.0.2
+matplotlib==3.10.8
+
+# Development
+pytest==9.0.3
+flake8==7.3.0
+black==26.3.1
+

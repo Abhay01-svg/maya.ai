@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maya AI - Professional Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #1e293b;
+            --secondary-color: #3b82f6;
+            --accent-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+            padding: 0 15px;
+            overflow: hidden;
+        }
+        
+        .chat-section {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--bg-tertiary));
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: var(--bg-primary);
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            border-radius: 16px;
+            position: relative;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.maya .message-content {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message-metadata {
+            font-size: 0.75em;
+            opacity: 0.7;
+            margin-top: 6px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .meta-tag {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        
+        .chat-input-section {
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        .message-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+        }
+        
+        .message-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+        }
+        
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .send-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9em;
+        }
+        
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85em;
+        }
+        
+        .card-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .status-badge.error {
+            background: var(--error-color);
+        }
+        
+        .status-badge.warning {
+            background: var(--warning-color);
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 16px 24px;
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9em;
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .typing-indicator.active {
+            display: block;
+        }
+        
+        .rag-search-indicator {
+            display: none;
+            padding: 16px 24px;
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .rag-search-indicator.active {
+            display: block;
+        }
+        
+        .rag-search-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .rag-search-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent-color);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: rag-spin 1s linear infinite;
+        }
+        
+        @keyframes rag-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .rag-search-text {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .rag-search-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        
+        .rag-search-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: rag-pulse 1.4s ease-in-out infinite both;
+        }
+        
+        .rag-search-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .rag-search-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .rag-search-dots span:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes rag-pulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .source-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            font-size: 0.75em;
+            color: var(--accent-color);
+            margin-top: 8px;
+        }
+        
+        .source-indicator.web-search {
+            background: rgba(255, 165, 0, 0.1);
+            border-color: rgba(255, 165, 0, 0.3);
+            color: #ffa500;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr 280px;
+                gap: 12px;
+                padding: 0 12px;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 12px;
+                padding: 0;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 0;
+            }
+            
+            .main-layout {
+                padding: 0 8px;
+                gap: 8px;
+            }
+            
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header p {
+                font-size: 0.9em;
+            }
+            
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+            
+            .card-header {
+                font-size: 0.85em;
+            }
+            
+            .card-item {
+                font-size: 0.8em;
+            }
+            
+            .message {
+                padding: 12px;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .input-wrapper {
+                flex: 1;
+            }
+            
+            .input-actions {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
+            
+            .action-btn {
+                flex: 1;
+                min-width: auto;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.3em;
+            }
+            
+            .card {
+                padding: 8px;
+            }
+            
+            .message {
+                padding: 8px;
+            }
+            
+            .card-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+        }
+        
+        /* Ensure full height on all screens */
+        @media (max-height: 700px) {
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.6em;
+                margin-bottom: 4px;
+            }
+            
+            .main-layout {
+                gap: 10px;
+            }
+            
+            .card {
+                padding: 10px;
+            }
+        }
+        
+        .file-upload-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .file-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .file-upload-btn:hover {
+            border-color: var(--accent-color);
+            background: rgba(139, 92, 246, 0.05);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+        
+        .file-upload-btn:active {
+            transform: translateY(0);
+        }
+        
+        .upload-icon {
+            font-size: 1.2em;
+        }
+        
+        .upload-text {
+            font-weight: 500;
+        }
+        
+        .file-info {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 0.85em;
+            display: none;
+        }
+        
+        .file-info.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 16px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .input-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Maya AI</h1>
+            <p>Professional AI Assistant Interface</p>
+        </div>
+        
+        <div class="main-layout">
+            <div class="chat-section">
+                <div class="chat-header">
+                    <div class="chat-title">
+                        <span>💬</span>
+                        <span>Assistant Chat</span>
+                        <div class="status-indicator"></div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message maya">
+                        <div class="message-content">
+                            Hello! I'm Maya AI, your professional assistant. How can I help you today?
+                            <div class="message-metadata">
+                                <span class="meta-tag">System Ready</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator">
+                    🤔 Processing your request...
+                </div>
+                
+                <div class="rag-search-indicator" id="ragSearchIndicator">
+                    <div class="rag-search-content">
+                        <div class="rag-search-icon"></div>
+                        <div class="rag-search-text">
+                            🦆 Searching DuckDuckGo
+                            <div class="rag-search-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-section">
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="messageInput" 
+                                class="message-input" 
+                                placeholder="Type your message here..."
+                                rows="1"
+                            ></textarea>
+                        </div>
+                        <div class="input-actions">
+                            <button class="action-btn" id="wakeWordBtn" title="Wake Word Detection" onclick="toggleWakeWord()">👂</button>
+                            <button class="action-btn" id="micBtn" title="Voice Input" onclick="toggleListening()">🎤</button>
+                            <button class="action-btn" id="ttsBtn" title="Text-to-Speech" onclick="toggleTTS()">🔊</button>
+                            <button class="action-btn" id="clearBtn" title="Clear Chat" onclick="clearChat()">🗑️</button>
+                            <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-upload-section">
+                        <button class="file-upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">
+                            <span class="upload-icon">➕</span>
+                            <span class="upload-text">Upload File</span>
+                        </button>
+                        <input type="file" id="fileInput" class="file-input" multiple>
+                        <div class="file-info" id="fileInfo"></div>
+                        <div class="file-upload-info" style="font-size: 0.75em; color: var(--text-muted); margin-top: 4px;">
+                            Max 16MB • TXT, PDF, Images, Code files
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <span>⚡</span>
+                        <span>System Status</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-item">
+                            <span>AI Models</span>
+                            <span class="status-badge" id="model-status">Ready</span>
+                        </div>
+                        <div class="card-item">
+                            <span>Processing</span>
+                            <span class="status-badge" id="processing-status">Idle</span>
+                        </div>
+                        <div class="card-item">
+                            <span>APIs</span>
+                            <span class="status-badge" id="api-status">Connected</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>📊</span>
+                        <span>Session Stats</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-item">
+                            <span>Messages</span>
+                            <span id="messageCount">0</span>
+                        </div>
+                        <div class="card-item">
+                            <span>Files Uploaded</span>
+                            <span id="fileCount">0</span>
+                        </div>
+                        <div class="card-item">
+                            <span>Response Time</span>
+                            <span id="responseTime">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>🔧</span>
+                        <span>Voice Settings</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-item">
+                            <span>Voice Rate</span>
+                            <input type="range" id="voiceRate" min="80" max="200" value="135" style="width: 80px;" onchange="updateVoiceSettings()">
+                        </div>
+                        <div class="card-item">
+                            <span>Volume</span>
+                            <input type="range" id="voiceVolume" min="0" max="100" value="80" style="width: 80px;" onchange="updateVoiceSettings()">
+                        </div>
+                        <div class="card-item">
+                            <span>Pitch</span>
+                            <input type="range" id="voicePitch" min="80" max="140" value="125" style="width: 80px;" onchange="updateVoiceSettings()">
+                        </div>
+                        <button class="action-btn" style="width: 100%; height: auto; padding: 12px; margin-top: 8px;" onclick="testVoice()">
+                            🎤 Test Voice
+                        </button>
+                        <button class="action-btn" style="width: 100%; height: auto; padding: 12px;" onclick="showVoiceOptions()">
+                            🔄 Change Voice
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span>🔧</span>
+                        <span>Quick Actions</span>
+                    </div>
+                    <div class="card-content">
+                        <button class="action-btn" style="width: 100%; height: auto; padding: 12px;" onclick="exportChat()">
+                            📥 Export Chat
+                        </button>
+                        <button class="action-btn" style="width: 100%; height: auto; padding: 12px;" onclick="toggleTheme()">
+                            🌙 Toggle Theme
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const ragSearchIndicator = document.getElementById('ragSearchIndicator');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        let messageCount = 0;
+        let fileCount = 0;
+        let isDarkTheme = true;
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.style.height = this.scrollHeight + 'px';
+        });
+        
+        // Enter key to send (Shift+Enter for new line)
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // File upload handler
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            for (let file of files) {
+                uploadFile(file);
+            }
+        }
+        
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Show upload progress
+            fileInfo.classList.add('active');
+            fileInfo.innerHTML = `
+                <div>Uploading: ${file.name}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            `;
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                document.getElementById('progressFill').style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 100);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                clearInterval(progressInterval);
+                
+                if (data.success) {
+                    fileCount++;
+                    document.getElementById('fileCount').textContent = fileCount;
+                    
+                    const fileData = data.file_info;
+                    const analysis = fileData.analysis;
+                    
+                    // Add file analysis message
+                    let fileMessage = `📄 File uploaded: ${fileData.original_name}`;
+                    fileMessage += `\n\nSize: ${(fileData.size / 1024).toFixed(1)} KB`;
+                    fileMessage += `\nType: ${fileData.type}`;
+                    
+                    if (analysis.ai_summary) {
+                        fileMessage += `\n\n📝 AI Analysis:\n${analysis.ai_summary}`;
+                    }
+                    
+                    addMessage(fileMessage, 'maya');
+                    
+                    fileInfo.innerHTML = `
+                        <div style="color: var(--success-color);">
+                            ✅ ${file.name} uploaded successfully
+                        </div>
+                    `;
+                    
+                    setTimeout(() => {
+                        fileInfo.classList.remove('active');
+                    }, 3000);
+                } else {
+                    fileInfo.innerHTML = `
+                        <div style="color: var(--error-color);">
+                            ❌ Upload failed: ${data.error}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                clearInterval(progressInterval);
+                fileInfo.innerHTML = `
+                    <div style="color: var(--error-color);">
+                        ❌ Upload failed: ${error.message}
+                    </div>
+                `;
+            });
+        }
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            // Show typing indicator
+            typingIndicator.classList.add('active');
+            
+            // Send to server
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                typingIndicator.classList.remove('active');
+                
+                if (data.success) {
+                    // Check if this is a RAG response and show animation
+                    if (data.metadata && data.metadata.is_rag_response) {
+                        showRagSearchAnimation(() => {
+                            addMessage(data.response, 'maya', data.metadata);
+                            updateStats(data.metadata);
+                        });
+                    } else {
+                        addMessage(data.response, 'maya', data.metadata);
+                        updateStats(data.metadata);
+                    }
+                } else {
+                    addMessage(data.response || '❌ Error occurred', 'maya');
+                }
+                document.getElementById('messageCount').textContent = messageCount;
+            })
+            .catch(error => {
+                typingIndicator.classList.remove('active');
+                sendBtn.disabled = false;
+                addMessage('❌ Connection error. Please try again.', 'maya');
+                console.error('Error:', error);
+            });
+        }
+        
+        function showRagSearchAnimation(callback) {
+            // Show RAG search animation
+            ragSearchIndicator.classList.add('active');
+            
+            // Simulate search duration (2-3 seconds)
+            const searchDuration = 2000 + Math.random() * 1000;
+            
+            setTimeout(() => {
+                ragSearchIndicator.classList.remove('active');
+                if (callback) callback();
+            }, searchDuration);
+        }
+        
+        function addMessage(content, sender, metadata = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            if (sender === 'maya') {
+                let messageHtml = content.replace(/\n/g, '<br>');
+                
+                // Add source indicator if this is a RAG response
+                if (metadata && metadata.is_rag_response) {
+                    messageHtml += '<div class="source-indicator web-search">🦆 DuckDuckGo Search</div>';
+                }
+                
+                messageHtml += '<div class="message-metadata"><span class="meta-tag">Just now</span></div>';
+                messageContent.innerHTML = messageHtml;
+            } else {
+                messageContent.innerHTML = content.replace(/\n/g, '<br>');
+            }
+            
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Auto-speak if TTS is enabled
+            if (sender === 'maya' && window.ttsEnabled) {
+                speakText(content);
+            }
+        }
+        
+        function clearChat() {
+            if (confirm('Are you sure you want to clear the chat history?')) {
+                chatMessages.innerHTML = `
+                    <div class="message maya">
+                        <div class="message-content">
+                            Chat cleared. How can I help you?
+                            <div class="message-metadata">
+                                <span class="meta-tag">Chat Reset</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messageCount = 0;
+                document.getElementById('messageCount').textContent = '0';
+            }
+        }
+        
+        function exportChat() {
+            const messages = Array.from(chatMessages.querySelectorAll('.message')).map(msg => {
+                const sender = msg.classList.contains('user') ? 'User' : 'Maya';
+                const content = msg.querySelector('.message-content').innerText;
+                return `${sender}: ${content}`;
+            }).join('\n\n');
+            
+            const blob = new Blob([messages], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'maya-chat-export.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            // Theme toggle implementation would go here
+            alert('Theme toggle coming soon!');
+        }
+        
+        function updateVoiceSettings() {
+            const rate = document.getElementById('voiceRate').value;
+            const volume = document.getElementById('voiceVolume').value / 100;
+            const pitch = document.getElementById('voicePitch').value;
+            
+            fetch('/voice/configure', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    rate: parseInt(rate),
+                    volume: volume,
+                    pitch: parseInt(pitch)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Voice settings updated');
+                }
+            })
+            .catch(error => {
+                console.error('Voice settings error:', error);
+            });
+        }
+        
+        function testVoice() {
+            const testText = "Hello, I'm Maya AI. I've adjusted my voice to sound more feminine and natural. How do I sound?";
+            
+            addMessage("🎤 Testing voice output...", 'maya');
+            
+            fetch('/voice/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: testText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addMessage("✅ Voice test completed. How did it sound?", 'maya');
+                } else {
+                    addMessage("❌ Voice test failed: " + data.error, 'maya');
+                }
+            })
+            .catch(error => {
+                console.error('Voice test error:', error);
+                addMessage("❌ Voice test failed. Please check your audio settings.", 'maya');
+            });
+        }
+        
+        function showVoiceOptions() {
+            fetch('/voice/voices')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.voices.length > 0) {
+                    let voiceList = "Available voices:\n\n";
+                    data.voices.forEach((voice, index) => {
+                        voiceList += `${index + 1}. ${voice.name}\n`;
+                    });
+                    
+                    const choice = prompt(voiceList + "\nEnter voice number to select:");
+                    if (choice && choice > 0 && choice <= data.voices.length) {
+                        const selectedVoice = data.voices[choice - 1];
+                        
+                        fetch('/voice/configure', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                voice_id: selectedVoice.id
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                addMessage(`🔄 Voice changed to: ${selectedVoice.name}`, 'maya');
+                                testVoice(); // Test the new voice
+                            }
+                        });
+                    }
+                } else {
+                    addMessage("❌ No additional voices available", 'maya');
+                }
+            })
+            .catch(error => {
+                console.error('Voice options error:', error);
+                addMessage("❌ Failed to load voice options", 'maya');
+            });
+        }
+        
+        // Voice and TTS functions with wake word detection
+        window.ttsEnabled = false;
+        window.wakeWordEnabled = false;
+        let recognition = null;
+        let listening = false;
+        let wakeWordStream = null;
+        let audioContext = null;
+        let wakeWordInterval = null;
+        
+        function toggleTTS() {
+            window.ttsEnabled = !window.ttsEnabled;
+            const ttsBtn = document.getElementById('ttsBtn');
+            ttsBtn.classList.toggle('active');
+            ttsBtn.textContent = window.ttsEnabled ? '🔈' : '🔊';
+            
+            // Use server-side TTS for better quality
+            if (window.ttsEnabled) {
+                addMessage("🔊 Text-to-speech enabled. I'll speak my responses.", 'maya');
+            }
+        }
+        
+        function speakText(text) {
+            if (!window.ttsEnabled) return;
+            
+            // Use server-side TTS for better voice quality
+            fetch('/voice/speak', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text, blocking: false })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Speaking:', text);
+                }
+            })
+            .catch(error => {
+                console.error('TTS error:', error);
+                // Fallback to browser TTS
+                if ('speechSynthesis' in window) {
+                    const utter = new SpeechSynthesisUtterance(text);
+                    utter.rate = 1.0;
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utter);
+                }
+            });
+        }
+        
+        function toggleWakeWord() {
+            window.wakeWordEnabled = !window.wakeWordEnabled;
+            const wakeWordBtn = document.getElementById('wakeWordBtn');
+            
+            if (window.wakeWordEnabled) {
+                startWakeWordDetection();
+                wakeWordBtn.classList.add('active');
+                wakeWordBtn.textContent = '👂';
+                addMessage("🎤 Wake word detection started. Say 'Maya' to activate!", 'maya');
+            } else {
+                stopWakeWordDetection();
+                wakeWordBtn.classList.remove('active');
+                wakeWordBtn.textContent = '👂';
+                addMessage("� Wake word detection stopped.", 'maya');
+            }
+        }
+        
+        function toggleAutoWake() {
+            window.autoWakeEnabled = !window.autoWakeEnabled;
+            const autoWakeBtn = document.getElementById('autoWakeBtn');
+            
+            if (window.autoWakeEnabled) {
+                startAutoWakeDetection();
+                autoWakeBtn.classList.add('active');
+                autoWakeBtn.textContent = '🎯';
+                addMessage("🎯 Automatic wake/stop detection started!\n\nWake words: Maya, Hey Maya, Hello Maya, Hi Maya\nStop words: Stop, Stop listening, Deactivate, Sleep, Quiet, Shut up, Stop Maya", 'maya');
+            } else {
+                stopAutoWakeDetection();
+                autoWakeBtn.classList.remove('active');
+                autoWakeBtn.textContent = '🎯';
+                addMessage("🔇 Automatic detection stopped.", 'maya');
+            }
+        }
+        
+        async function startWakeWordDetection() {
+            try {
+                // Start server-side wake word detection
+                const response = await fetch('/voice/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Wake word detection started:', data.wake_words);
+                    
+                    // Start checking for wake word detections
+                    wakeWordInterval = setInterval(checkWakeWordStatus, 1000);
+                } else {
+                    console.error('Failed to start wake word detection:', data.error);
+                    window.wakeWordEnabled = false;
+                    document.getElementById('wakeWordBtn').classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Wake word start error:', error);
+                window.wakeWordEnabled = false;
+                document.getElementById('wakeWordBtn').classList.remove('active');
+            }
+        }
+        
+        async function stopWakeWordDetection() {
+            try {
+                if (wakeWordInterval) {
+                    clearInterval(wakeWordInterval);
+                    wakeWordInterval = null;
+                }
+                
+                await fetch('/voice/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                console.log('Wake word detection stopped');
+            } catch (error) {
+                console.error('Wake word stop error:', error);
+            }
+        }
+        
+        async function checkWakeWordStatus() {
+            try {
+                const response = await fetch('/voice/status');
+                const data = await response.json();
+                
+                if (data.success && data.voice_processor.is_listening) {
+                    // Check if any wake word was detected (this would be enhanced with WebSocket)
+                    // For now, we'll just show the status
+                    console.log('Wake word status: Active');
+                }
+            } catch (error) {
+                console.error('Wake word status check error:', error);
+            }
+        }
+        
+        async function startAutoWakeDetection() {
+            try {
+                // Start server-side automatic wake/stop detection
+                const response = await fetch('/voice/auto', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Automatic wake/stop detection started');
+                    
+                    // Start checking for detections
+                    wakeWordInterval = setInterval(checkAutoWakeStatus, 1000);
+                } else {
+                    console.error('Failed to start auto detection:', data.error);
+                    window.autoWakeEnabled = false;
+                    document.getElementById('autoWakeBtn').classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Auto wake start error:', error);
+                window.autoWakeEnabled = false;
+                document.getElementById('autoWakeBtn').classList.remove('active');
+            }
+        }
+        
+        async function stopAutoWakeDetection() {
+            try {
+                if (wakeWordInterval) {
+                    clearInterval(wakeWordInterval);
+                    wakeWordInterval = null;
+                }
+                
+                await fetch('/voice/stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                console.log('Automatic detection stopped');
+            } catch (error) {
+                console.error('Auto wake stop error:', error);
+            }
+        }
+        
+        async function checkAutoWakeStatus() {
+            try {
+                const response = await fetch('/voice/status');
+                const data = await response.json();
+                
+                if (data.success && !data.voice_processor.is_listening && window.autoWakeEnabled) {
+                    // Auto detection was stopped (likely by stop word)
+                    console.log('Auto detection stopped by stop word');
+                    window.autoWakeEnabled = false;
+                    document.getElementById('autoWakeBtn').classList.remove('active');
+                    addMessage("🛑 Stop word detected. Automatic detection stopped.", 'maya');
+                }
+            } catch (error) {
+                console.error('Auto wake status check error:', error);
+            }
+        }
+        
+        function toggleListening() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Speech recognition not supported in this browser');
+                return;
+            }
+            
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!recognition) {
+                recognition = new SR();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    messageInput.value = transcript;
+                    sendMessage();
+                };
+                recognition.onend = () => { 
+                    listening = false; 
+                    document.getElementById('micBtn').classList.remove('active');
+                    document.getElementById('micBtn').textContent = '🎤'; 
+                };
+            }
+            
+            const micBtn = document.getElementById('micBtn');
+            if (!listening) {
+                recognition.start();
+                listening = true;
+                micBtn.classList.add('active');
+                micBtn.textContent = '⏺️';
+            } else {
+                recognition.stop();
+                listening = false;
+                micBtn.classList.remove('active');
+                micBtn.textContent = '🎤';
+            }
+        }
+        
+        // Load initial status
+        function loadStatus() {
+            fetch('/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const stats = data.stats || {};
+                    
+                    // Update model status
+                    const modelStatus = document.getElementById('model-status');
+                    const ollamaStatus = stats.ollama ? stats.ollama.status : 'unknown';
+                    modelStatus.textContent = ollamaStatus === 'running' ? 'Online' : 'Offline';
+                    modelStatus.className = 'status-badge ' + (ollamaStatus === 'running' ? '' : 'warning');
+                    
+                    // Update API status
+                    const apiStatus = document.getElementById('api-status');
+                    apiStatus.textContent = 'Connected';
+                    
+                    // Update message count if available
+                    if (stats.memory_chats) {
+                        document.getElementById('messageCount').textContent = stats.memory_chats;
+                    }
+                }
+            })
+            .catch(error => {
+                console.log('Status check:', error);
+            });
+            
+            // Load voice status
+            fetch('/voice/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Voice system status:', data);
+                    // Update voice indicators if needed
+                }
+            })
+            .catch(error => {
+                console.log('Voice status check:', error);
+            });
+        }
+        
+        // Initialize
+        loadStatus();
+        setInterval(loadStatus, 10000);
+        
+        // Apply more feminine voice settings on load
+        setTimeout(() => {
+            updateVoiceSettings();
+            console.log('Applied feminine voice settings');
+        }, 1000);
+    </script>
+</body>
+</html>
